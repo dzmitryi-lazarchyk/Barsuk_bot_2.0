@@ -67,7 +67,8 @@ async def breweries(query:types.InlineQuery, state:FSMContext):
     )
 
 async def brewery_inline(query: types.InlineQuery, state:FSMContext):
-    brewery = query.query.strip('пивоварня ')
+    brewery = query.query[10:]
+    print(brewery)
     beers = await Jar.get_several(brewery=brewery)
     await query.answer(
         results=[

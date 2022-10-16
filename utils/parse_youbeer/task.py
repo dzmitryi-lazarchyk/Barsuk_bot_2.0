@@ -62,7 +62,7 @@ async def new_jars(dp:Dispatcher):
                       f'{"🍯" if "mead" in beer.sort.lower() else ""}'\
                       f'{"🍅" if "Other Gose" in beer.sort.lower() else ""}\n'\
                       f'{beer.sort}\n'
-                await Jar.delete(tap=jar)
+                await Jar.delete(name=jar)
                 for user in users:
                     await dp.bot.send_message(chat_id=user.id, text=msg)
 
