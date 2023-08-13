@@ -78,14 +78,16 @@ def parse_yourbear(product: str):
 
             price_list = item.find('div', class_="b-skus-type").get_text() + item.find('div',
                                                                                        class_="b-skus-price ml-auto").get_text()
-
-            bear.append(Jar(
-                name=item.find('h2').find('a').get_text(),
-                brewery=item.find('h3').find('a').get_text(),
-                link=item.find('h2').find('a').get('href'),
-                image=item.find('div', class_="b-logo justify-content-start").find('a').get('data-bg'),
-                sort=sort,
-                price_list=price_list,
-            ))
+            try:
+                bear.append(Jar(
+                    name=item.find('h2').find('a').get_text(),
+                    brewery=item.find('h3').find('a').get_text(),
+                    link=item.find('h2').find('a').get('href'),
+                    image=item.find('div', class_="b-logo justify-content-start").find('a').get('data-bg'),
+                    sort=sort,
+                    price_list=price_list,
+                ))
+            except AttributeError:
+                pass
 
         return bear
