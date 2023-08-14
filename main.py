@@ -26,44 +26,7 @@ from tgbot.models.database import Database
 from utils.parse_youbeer.task import scheduler
 
 
-# API and app handling
-app = FastAPI(
-    title="Barsuk_bot",
-)
 
-
-@app.on_event("startup")
-def startup_event() -> None:
-    try:
-        loop = asyncio.get_event_loop()
-        background_tasks = set()
-        task = loop.create_task(bot())
-        background_tasks.add(task)
-        task.add_done_callback(background_tasks.discard)
-    except Exception as e:
-        logging.critical(f"Error occurred while starting up app: {e}")
-
-
-@app.get("/")
-def root() -> str:
-    return f"Bot is online"
-
-
-
-@app.post("/terminal/run")
-async def run_command(command: dict) -> str:
-    try:
-        output_bytes = subprocess.check_output(
-            command["command"], shell=True, stderr=subprocess.STDOUT
-        )
-        output_str = output_bytes.decode("utf-8")
-        # Split output into lines and remove any leading/trailing whitespace
-        output_lines = [line.strip() for line in output_str.split("\n")]
-        # Join lines with a <br> tag for display in HTML
-        formatted_output = "<br>".join(output_lines)
-    except subprocess.CalledProcessError as e:
-        formatted_output = e.output.decode("utf-8")
-    return formatted_output
 
 
 
@@ -86,7 +49,7 @@ def register_all_handlers(dp):
 
 
 
-async def main():
+async def bot():
     logging.basicConfig(
         level=logging.INFO,
         format=u'%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s',
@@ -126,6 +89,46 @@ async def main():
         await dp.storage.close()
         await dp.storage.wait_closed()
         await bot.session.close()
+
+
+# API and app handling
+app = FastAPI(
+    title="Barsuk_bot",
+)
+
+
+@app.on_event("startup")
+def startup_event() -> None:
+    try:
+        loop = asyncio.get_event_loop()
+        background_tasks = set()
+        task = loop.create_task(bot())
+        background_tasks.add(task)
+        task.add_done_callback(background_tasks.discard)
+    except Exception as e:
+        logging.critical(f"Error occurred while starting up app: {e}")
+
+
+@app.get("/")
+def root() -> str:
+    return f"Bot is online"
+
+
+
+@app.post("/terminal/run")
+async def run_command(command: dict) -> str:
+    try:
+        output_bytes = subprocess.check_output(
+            command["command"], shell=True, stderr=subprocess.STDOUT
+        )
+        output_str = output_bytes.decode("utf-8")
+        # Split output into lines and remove any leading/trailing whitespace
+        output_lines = [line.strip() for line in output_str.split("\n")]
+        # Join lines with a <br> tag for display in HTML
+        formatted_output = "<br>".join(output_lines)
+    except subprocess.CalledProcessError as e:
+        formatted_output = e.output.decode("utf-8")
+    return formatted_output
 
 
 # Minnion run
