@@ -69,9 +69,9 @@ async def new_jars(dp:Dispatcher):
 
 async def scheduler(dp:Dispatcher):
     await new_taps(dp)
-    await new_jars(dp)
-    aioschedule.every(10).minutes.do(new_taps, dp)
-    aioschedule.every(10).minutes.do(new_jars, dp)
+    # await new_jars(dp)
+    aioschedule.every(1).hour.do(new_taps, dp)
+    aioschedule.every(1).day.do(new_jars, dp)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)
