@@ -5,17 +5,16 @@ from aiogram import Bot, Dispatcher
 from tgbot.models.database import User, Tap, Jar
 from utils.parse_youbeer.beer import parse_yourbear
 
-
 async def new_taps(dp:Dispatcher):
-    parse_beer = {beer.tap:beer for beer in parse_yourbear("taps")}
-    db_beer = {beer.tap:beer for beer in await Tap.get_all()}
-    result_taps=set(parse_beer.keys()) ^ set(db_beer.keys())
-    if result_taps:
+    parse_beer = {beer.name:beer for beer in parse_yourbear("taps")}
+    db_beer = {beer.name:beer for beer in await Tap.get_all()}
+    result_names=set(parse_beer.keys()) ^ set(db_beer.keys())
+    if result_names:
         users = await User.get_all()
 
-        for tap in result_taps:
-            beer = parse_beer.get(tap, db_beer.get(tap))
-            if tap in parse_beer:
+        for name in result_names:
+            beer = parse_beer.get(name, db_beer.get(name))
+            if name in parse_beer:
                 msg = f'<b>🎉Новинка на кране🎉:\n</b>'\
                       f'{beer.tap}.<b>{beer.name} : {beer.brewery}</b>'\
                       f'{"🍯" if "mead" in beer.sort.lower() else ""}'\
@@ -23,7 +22,7 @@ async def new_taps(dp:Dispatcher):
                       f'{beer.sort}\n'\
                       f'{beer.price_list}\n'\
                       f'<a href="{beer.link}">Подробнее на Your.Beer</a>'
-                await Tap.add(parse_beer[tap])
+                await Tap.add(parse_beer[name])
                 for user in users:
                     await dp.bot.send_photo(chat_id=user.id, photo=beer.image, caption=msg)
             else:
@@ -32,7 +31,7 @@ async def new_taps(dp:Dispatcher):
                       f'{"🍯" if "mead" in beer.sort.lower() else ""}'\
                       f'{"🍅" if "Other Gose" in beer.sort.lower() else ""}\n'\
                       f'{beer.sort}\n'
-                await Tap.delete(tap=tap)
+                await Tap.delete(name=name)
                 for user in users:
                     await dp.bot.send_message(chat_id=user.id, text=msg)
 
