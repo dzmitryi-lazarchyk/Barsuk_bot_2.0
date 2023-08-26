@@ -173,7 +173,7 @@ class Tap(Database):
         objects = []
         for i in args:
             objects.append(Tap(*i))
-        return objects
+        return objects.sort(key=lambda bear: int(bear.tap))
 
     @classmethod
     async def get(cls, **kwargs):
